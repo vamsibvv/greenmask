@@ -18,11 +18,12 @@ import "strings"
 
 // Email keeps the domain and the first 3 characters of the local part, and
 // replaces the rest of the local part with "****", e.g. ggw.chang@gmail.com
-// becomes ggw****@gmail.com. A value without "@" is masked as a local part.
+// becomes ggw****@gmail.com. The domain starts after the last "@", as a quoted
+// local part may contain "@". A value without "@" is masked as a local part.
 func Email(v string) string {
-	local, domain, found := strings.Cut(v, "@")
-	if found {
-		domain = "@" + domain
+	local, domain := v, ""
+	if i := strings.LastIndex(v, "@"); i >= 0 {
+		local, domain = v[:i], v[i:]
 	}
 	runes := []rune(local)
 	if len(runes) == 0 {
